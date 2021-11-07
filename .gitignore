@@ -1,0 +1,3 @@
+*.img
+*.img.lz4
+ssh_host_ed25519_key*
