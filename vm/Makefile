@@ -12,7 +12,7 @@ arch.img: arch.img.lz4
 arch.img.lz4: build.sh bootstrap.sh pkg.lst ssh_host_ed25519_key
 	docker run \
 		--rm \
-		--privileged \
+		--cap-add SYS_ADMIN \
 		$(foreach file,$^,-v "$$PWD/$(file)":"/$(file)") \
 		-e SIZE="$(SIZE)" \
 		-e IP_ADDR="$(IP_ADDR)" \

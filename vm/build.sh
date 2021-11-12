@@ -12,9 +12,6 @@ env
 apk update
 apk add curl e2fsprogs e2fsprogs-extra lz4
 
-truncate -s "$SIZE" /img
-mkfs.ext4 /img
-
 mkdir /chroot
 
 curl -sSL http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz | gzip -d | tar -C /chroot -x
@@ -28,7 +25,6 @@ mount --make-rslave --rbind /sys /chroot/sys
 mount --make-rslave --rbind /dev /chroot/dev
 mount --make-rslave --rbind /run /chroot/run
 
-mount -o loop -t ext4 /img /chroot/mnt
 touch /chroot/bootstrap.sh
 mount --bind /bootstrap.sh /chroot/bootstrap.sh
 touch /chroot/pkg.lst
@@ -39,8 +35,10 @@ chroot /chroot env -i IP_ADDR="$IP_ADDR" PUB_KEY="$PUB_KEY" /bootstrap.sh
 umount /chroot/bootstrap.sh
 umount /chroot/pkg.lst
 umount /chroot/ssh_host_ed25519_key
-umount /chroot/mnt
 
+truncate -s "$SIZE" /img
+mke2fs -t ext4 -d /chroot/mnt /img
 e2fsck -y -f /img
 resize2fs -M /img
+
 lz4 < /img >&3
